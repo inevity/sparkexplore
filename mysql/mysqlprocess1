@@ -1,0 +1,37 @@
+#use spark;
+#by error type
+select httpstate,count(*) from sparktojdbc where httpstate != '200' and httpstate != '206' and channel like '%mgtv%' group by httpstate order by count(*) desc;
+select httpstate,count(*) AS Total , (COUNT(*) / (SELECT COUNT(*) FROM sparktojdbc where httpstate != '200' and httpstate != '206' and channel like '%mgtv%')) * 100 AS 'Percentage to all error items' from sparktojdbc where httpstate != '200' and httpstate != '206' and channel like '%mgtv%' group by httpstate order by count(*) desc;
+select httpstate,count(*) AS Total , (COUNT(*) / (SELECT COUNT(*) FROM sparktojdbc where channel like '%mgtv%')) * 100 AS 'Percentage to all items' from sparktojdbc where httpstate != '200' and httpstate != '206' and channel like '%mgtv%' group by httpstate order by count(*) desc;
+#if detail,uncomment below
+#select state,httpstate,channel,count(*) from sparktojdbc where httpstate != '200' and httpstate != '206' and channel like '%mgtv%' group by state,httpstate,channel order by count(*) desc;
+select count(*) from sparktojdbc where httpstate != '200' and httpstate != '206' and channel like '%mgtv%';
+select count(*) from sparktojdbc where channel like '%mgtv%';
+
+# diffirential ip
+
+#select distinct remoteip from sparktojdbc where channel like '%mgtv%';
+
+#passed
+#select 'remoteip'
+#UNION ALL
+#select count(distinct remoteip)
+#from sparktojdbc where channel like '%mgtv%' INTO OUTFILE 'outfile';
+
+select count(distinct remoteip) from sparktojdbc where channel like '%mgtv%';
+select count(distinct remoteip) from sparktojdbc where httpstate != '200' and httpstate != '206' and channel like '%mgtv%';
+select count(distinct remoteip) AS errorcountip, (count(distinct remoteip)/(select count(distinct remoteip) from sparktojdbc where channel like '%mgtv%')) *100 AS 'errip Percentage to all ip' from sparktojdbc where httpstate != '200' and httpstate != '206' and channel like '%mgtv%';
+#select remoteip,count(*) from sparktojdbc where channel like '%mgtv%' group by remoteip;
+#select remoteip,count(*) from sparktojdbc where httpstate != '200' and httpstate != '206' and channel like '%mgtv%'group by remoteip;
+
+
+
+#fail
+#SELECT sparktojdbc.httpstate
+#     ,COUNT(1) AS total
+#     ,COUNT(1) / t.cnt * 100 AS `percentage`
+#FROM sparktojdbc stoj where httpstate != '200' and httpstate != '206' and channel like '%mgtv%'
+#CROSS
+#  JOIN (SELECT COUNT(1) AS cnt FROM sparktojdbc where channel like '%mgtv%') t
+#groupby stoj.httpstate;
+

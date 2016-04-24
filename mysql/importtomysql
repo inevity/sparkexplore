@@ -1,0 +1,2 @@
+/home/work/athena/spark-1.4.1-bin-hadoop2.4/bin/spark-submit --master local[*] --jars /tmp/mysql-connector-java-5.1.33.jar --driver-class-path /tmp/mysql-connector-java-5.1.33.jar --class com.sophnep.app.SparkToJDBC /tmp/SparkSql-assembly-1.0.0.jar "jdbc:mysql://10.11.0.157:3306/spark?user=root&password=sophnep" stoj0423sccnc file:///data/storage2/cache_log/access/20160423/*/*/*CNC-SC*.gz
+

@@ -1,0 +1,39 @@
+
+use spark;
+set @stoj = 'stoj0423sccnc',@stojipdup = 'stojipdupsccnc0423', @stojipdedup= 'stojipdedupsccnci0423',@outfiledup="'/data/outfiledupsccnc0423.csv'",@outfilededup= "'/data/outfilededupsccnc0423.csv'";
+##ip dup
+#create table timestampstatss select timestamp,httpstate,count(*) as count from stoj where channel like '%mgtv%' group by timestamp,httpstate order by timestamp;
+#select ss.timestamp,ss.httpstate,ss.count,ssu.count,ss.count/ssu.count*100 from timestampstatss as ss INNER JOIN (select timestamp,sum(count) as count from timestampstatss group by timestamp) as ssu on ss.timestamp = ssu.timestamp INTO OUTFILE  '/data/ipdup.csv'  FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n';
+##ip dedup
+#create table diffip select timestamp,httpstate,count(DISTINCT remoteip) as count from stoj where channel like '%mgtv%' group by timestamp,httpstate order by timestamp;
+#select ss.timestamp,ss.httpstate,ss.count,ssu.count,ss.count/ssu.count*100 from diffip as ss INNER JOIN (select timestamp,sum(count) as count from diffip group by timestamp) as ssu on ss.timestamp = ssu.timestamp INTO OUTFILE  '/data/ipdedup.csv'  FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n';
+#
+
+
+set @sdup = CONCAT('create table ',@stojipdup, ' select timestamp,httpstate,count(*) as count from ', @stoj,' where channel like \'%mgtv%\' group by timestamp,httpstate order by timestamp');
+prepare ipdup from @sdup;
+EXECUTE ipdup;
+DEALLOCATE PREPARE ipdup;
+
+set @stdup = concat('select ss.timestamp,ss.httpstate,ss.count,ssu.count,ss.count/ssu.count*100 from ',@stojipdup,' as ss INNER JOIN (select timestamp,sum(count) as count from ',@stojipdup,' group by timestamp) as ssu on ss.timestamp = ssu.timestamp INTO OUTFILE ', @outfiledup,' FIELDS TERMINATED BY ',quote(','),' LINES TERMINATED BY ''\n''');
+prepare ipdupoutfile from @stdup;
+EXECUTE ipdupoutfile;
+DEALLOCATE PREPARE ipdupoutfile;
+
+set @sdedup = CONCAT('create table ',@stojipdedup, ' select timestamp,httpstate,count(DISTINCT remoteip) as count from ', @stoj,' where channel like \'%mgtv%\' group by timestamp,httpstate order by timestamp');
+prepare ipdedup from @sdedup;
+EXECUTE ipdedup;
+DEALLOCATE PREPARE ipdedup;
+
+set @stdedup = concat('select ss.timestamp,ss.httpstate,ss.count,ssu.count,ss.count/ssu.count*100 from ',@stojipdedup,' as ss INNER JOIN (select timestamp,sum(count) as count from ',@stojipdedup,' group by timestamp) as ssu on ss.timestamp = ssu.timestamp INTO OUTFILE ',@outfilededup,' FIELDS TERMINATED BY ',quote(','),' LINES TERMINATED BY ''\n''');
+prepare ipdedupoutfile from @stdedup;
+EXECUTE ipdedupoutfile;
+DEALLOCATE PREPARE ipdedupoutfile;
+
+
+#select ss.timestamp,ss.httpstate,ss.count,ssu.count,ss.count/ssu.count*100 from timestampstatss as ss INNER JOIN (select timestamp,sum(count) as count from timestampstatss group by timestamp) as ssu on ss.timestamp = ssu.timestamp INTO OUTFILE  '/data/ipdup.csv'  FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n';
+#PREPARE ipdupout FROM 'select ss.timestamp,ss.httpstate,ss.count,ssu.count,ss.count/ssu.count*100 from timestampstatss as ss INNER JOIN (select timestamp,sum(count) as count from timestampstatss group by timestamp) as ssu on ss.timestamp = ssu.timestamp INTO OUTFILE  '?'  FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n'';
+#set @a = /data/ipdup.csv;
+#EXECUTE ipdupout using @a;
+#DEALLOCATE PREPARE ipdupot;
+#
