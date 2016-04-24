@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<!--
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License. See accompanying LICENSE file.
+-->
+
+<!-- Put site-specific property overrides in this file. -->
+
+<configuration>
+  <property>
+    <name>fs.defaultFS</name>
+    <value>hdfs://sophnep/</value>
+    <description>The default path prefix used by the Hadoop FS client when none is given.
+      Optionally, you may now configure the default path for Hadoop clients to use the new
+      HA-enabled logical URI. If you used sophnep as the nameservice ID earlier, this will
+      be the value of the authority portion of all of your HDFS paths.</description>
+  </property>
+
+  <property>
+    <name>ha.zookeeper.quorum</name>
+    <value>192.168.1.187:2181,192.168.1.188:2181,192.168.1.189:2181</value>
+    <description>The host-port pairs running the ZooKeeper service.</description>
+  </property>
+
+  <property>
+    <name>hadoop.proxyuser.hdfs.hosts</name>
+    <value>*</value>
+    <description>Defines the Unix user, hdfs, that will run the HttpFS server as
+      a proxyuser.</description>
+  </property>
+  <property>
+    <name>hadoop.proxyuser.hdfs.groups</name>
+    <value>*</value>
+    <description>Replaces hdfs with the Unix user that will start the HttpFS server.
+      </description>
+  </property>
+  <!--tachyon-->
+  <property>
+   <name>fs.tachyon.impl</name>
+   <value>tachyon.hadoop.TFS</value>
+  </property>
+</configuration>

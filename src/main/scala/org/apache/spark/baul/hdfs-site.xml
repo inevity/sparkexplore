@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<!--
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License. See accompanying LICENSE file.
+-->
+
+<!-- Put site-specific property overrides in this file. -->
+
+<configuration>
+  <property>
+    <name>dfs.nameservices</name>
+    <value>sophnep</value>
+  </property>
+
+  <property>
+    <name>dfs.ha.namenodes.sophnep</name>
+    <value>nn1,nn2</value>
+    <description>Choose a logical name for this nameservice and use this logical name
+      for the value of this config option. The name you choose is arbitrary.
+      It will be used both for configuration and as the authority component of absolute
+      HDFS paths in the cluster.</description>
+  </property>
+
+  <property>
+    <name>dfs.namenode.rpc-address.sophnep.nn1</name>
+    <value>192.168.1.192:8020</value>
+    <description>Set the full address and IPC port of the NameNode processs.
+      Note that this results in two separate configuration options.</description>
+  </property>
+  <property>
+    <name>dfs.namenode.rpc-address.sophnep.nn2</name>
+    <value>192.168.1.193:8020</value>
+  </property>
+
+  <property>
+    <name>dfs.namenode.http-address.sophnep.nn1</name>
+    <value>192.168.1.192:50070</value>
+    <description>Set the addresses for both NameNodes HTTP servers to listen on.
+      Note that this results in two separate configuration options.</description>
+  </property>
+  <property>
+    <name>dfs.namenode.http-address.sophnep.nn2</name>
+    <value>192.168.1.193:50070</value>
+  </property>
+
+  <property>
+    <name>dfs.namenode.shared.edits.dir</name>
+    <value>qjournal://192.168.1.194:8485;192.168.1.195:8485;192.168.1.196:8485/sophnep</value>
+    <description>Configure the addresses of the JournalNodes which provide the shared
+      edits storage, written to by the Active nameNode and read by the Standby NameNode.
+    </description>
+  </property>
+  <property>
+    <name>dfs.journalnode.edits.dir</name>
+    <value>/data/1/dfs/jn</value>
+    <description>The absolute path on the JournalNode machines where the edits and other
+      local state used by the JNs will be stored. You may only use a single path for this
+      configuration. Redundancy for this data is provided by running multiple separate
+      JournalNodes.</description>
+  </property>
+
+  <property>
+    <name>dfs.client.failover.proxy.provider.sophnep</name>
+    <value>org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider</value>
+    <description>Configure the name of the Java class which will be used by the DFS Client
+      to determine which NameNode is the current Active, and therefore which NameNode is
+      currently serving client requests. The only implementation which currently ships
+      with Hadoop is the ConfiguredFailoverProxyProvider.</description>
+  </property>
+  <property>
+    <name>dfs.ha.fencing.methods</name>
+    <value>shell(/bin/true)</value>
+    <description>No actual fencing methods.</description>
+  </property>
+
+  <property>
+    <name>dfs.ha.automatic-failover.enabled</name>
+    <value>true</value>
+    <description>The cluster should be set up for automatic failover or not.</description>
+  </property>
+
+  <property>
+    <name>dfs.namenode.name.dir</name>
+    <value>/data/1/dfs/nn</value>
+    <description>Path on the local filesystem where the NameNode stores the namespace
+      and transaction logs persistently.</description>
+  </property>
+  <property>
+    <name>dfs.datanode.data.dir</name>
+    <value>/data/1/dfs/dn</value>
+    <description>Comma separated list of paths on the local filesystem of a DataNode
+      where it should store its blocks.</description>
+  </property>
+
+  <property>
+    <name>dfs.permissions.superusergroup</name>
+    <value>hadoop</value>
+    <description>Specifies the UNIX group containing users that will be treated as
+      superusers by HDFS.</description>
+  </property>
+
+  <property>
+    <name>dfs.namenode.datanode.registration.ip-hostname-check</name>
+    <value>false</value>
+    <description>
+      If true (the default), then the namenode requires that a connecting
+      datanode's address must be resolved to a hostname.  If necessary, a reverse
+      DNS lookup is performed.  All attempts to register a datanode from an
+      unresolvable address are rejected.
+
+      It is recommended that this setting be left on to prevent accidental
+      registration of datanodes listed by hostname in the excludes file during a
+      DNS outage.  Only set this to false in environments where there is no
+      infrastructure to support reverse DNS lookup.
+    </description>
+  </property>
+<!--tachyon-->
+    <property>
+      <name>fs.tachyon.impl</name>
+      <value>tachyon.hadoop.TFS</value>
+   </property> 
+</configuration>
