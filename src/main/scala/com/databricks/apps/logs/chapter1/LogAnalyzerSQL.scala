@@ -1,8 +1,13 @@
 package com.databricks.apps.logs.chapter1
-
-import com.databricks.apps.logs.ApacheAccessLog
+//package should matach with the pom file..
+//import com.databricks.apps.logs.ApacheAccessLog
+import com.databricks.apps.logs.SquidAccessLog
 import org.apache.spark.sql.SQLContext
 import org.apache.spark.{SparkContext, SparkConf}
+// start hivethriftserver
+import org.apache.spark.sql.hive.HiveContext
+import org.apache.spark.sql.hive.thriftserver.HiveThriftServer2
+
 
 /**
  * LogAnalyzerSQL shows how to use SQL syntax with Spark.
@@ -21,42 +26,52 @@ object LogAnalyzerSQL {
 
     val logFile = args(0)
 
-    val sqlContext = new SQLContext(sc)
+//    val sqlContext = new SQLContext(sc)
+    val sqlContext = new HiveContext(sc)
+    sqlContext.setConf("hive.server2.thrift.port", "10001")
     import sqlContext.implicits._
 
-    val accessLogs = sc.textFile(logFile).map(ApacheAccessLog.parseLogLine).toDF()
-    accessLogs.registerTempTable("com.databricks.app.logs")
-    sqlContext.cacheTable("com.databricks.app.logs");
+    //val accessLogs = sc.textFile(logFile).map(ApacheAccessLog.parseLogLine).toDF()
+    val accessLogs = sc.textFile(logFile).map(SquidAccessLog.parseLogLine).toDF()
+    //accessLogs.registerTempTable("com.databricks.app.logs")
+    accessLogs.registerTempTable("squidtables")
 
-    // Calculate statistics based on the content size.
-    val contentSizeStats = sqlContext
-      .sql("SELECT SUM(contentSize), COUNT(*), MIN(contentSize), MAX(contentSize) FROM com.databricks.app.logs")
-      .first()
-    println("Content Size Avg: %s, Min: %s, Max: %s".format(
-      contentSizeStats.getLong(0) / contentSizeStats.getLong(1),
-      contentSizeStats(2),
-      contentSizeStats(3)))
+    HiveThriftServer2.startWithContext(sqlContext)
+    while (true) {
+    Thread.`yield`()
+    }
+  
+//    sqlContext.cacheTable("com.databricks.app.logs");
 
-    // Compute Response Code to Count.
-    val responseCodeToCount = sqlContext
-      .sql("SELECT responseCode, COUNT(*) FROM com.databricks.app.logs GROUP BY responseCode LIMIT 1000")
-      .map(row => (row.getInt(0), row.getLong(1)))
-      .collect()
-    println(s"""Response code counts: ${responseCodeToCount.mkString("[", ",", "]")}""")
+//    // Calculate statistics based on the content size.
+//    val contentSizeStats = sqlContext
+//      .sql("SELECT SUM(contentSize), COUNT(*), MIN(contentSize), MAX(contentSize) FROM com.databricks.app.logs")
+//      .first()
+//    println("Content Size Avg: %s, Min: %s, Max: %s".format(
+//      contentSizeStats.getLong(0) / contentSizeStats.getLong(1),
+//      contentSizeStats(2),
+//      contentSizeStats(3)))
+//
+//    // Compute Response Code to Count.
+//    val responseCodeToCount = sqlContext
+//      .sql("SELECT responseCode, COUNT(*) FROM com.databricks.app.logs GROUP BY responseCode LIMIT 1000")
+//      .map(row => (row.getInt(0), row.getLong(1)))
+//      .collect()
+//    println(s"""Response code counts: ${responseCodeToCount.mkString("[", ",", "]")}""")
+//
+//    // Any IPAddress that has accessed the server more than 10 times.
+//    val ipAddresses =sqlContext
+//      .sql("SELECT ipAddress, COUNT(*) AS total FROM com.databricks.app.logs GROUP BY ipAddress HAVING total > 10 LIMIT 1000")
+//      .map(row => row.getString(0))
+//      .collect()
+//    println(s"""IPAddresses > 10 times: ${ipAddresses.mkString("[", ",", "]")}""")
+//
+//    val topEndpoints = sqlContext
+//      .sql("SELECT endpoint, COUNT(*) AS total FROM com.databricks.app.logs GROUP BY endpoint ORDER BY total DESC LIMIT 10")
+//      .map(row => (row.getString(0), row.getLong(1)))
+//      .collect()
+//    println(s"""Top Endpoints: ${topEndpoints.mkString("[", ",", "]")}""")
 
-    // Any IPAddress that has accessed the server more than 10 times.
-    val ipAddresses =sqlContext
-      .sql("SELECT ipAddress, COUNT(*) AS total FROM com.databricks.app.logs GROUP BY ipAddress HAVING total > 10 LIMIT 1000")
-      .map(row => row.getString(0))
-      .collect()
-    println(s"""IPAddresses > 10 times: ${ipAddresses.mkString("[", ",", "]")}""")
-
-    val topEndpoints = sqlContext
-      .sql("SELECT endpoint, COUNT(*) AS total FROM com.databricks.app.logs GROUP BY endpoint ORDER BY total DESC LIMIT 10")
-      .map(row => (row.getString(0), row.getLong(1)))
-      .collect()
-    println(s"""Top Endpoints: ${topEndpoints.mkString("[", ",", "]")}""")
-
-    sc.stop()
+//  sc.stop()
   }
 }

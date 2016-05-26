@@ -53,6 +53,18 @@
        <version>1.6.2-SNAPSHOT</version>
        <scope>provided</scope>
     </dependency>
+    <dependency> <!-- Spark Hive -->
+       <groupId>org.apache.spark</groupId>
+       <artifactId>spark-hive_2.10</artifactId>
+       <version>1.6.2-SNAPSHOT</version>
+       <scope>provided</scope>
+    </dependency>
+    <dependency> <!-- Spark hive-thritserver -->
+       <groupId>org.apache.spark</groupId>
+       <artifactId>spark-hive-thriftserver_2.10</artifactId>
+       <version>1.6.2-SNAPSHOT</version>
+       <scope>provided</scope>
+    </dependency>
     <dependency> <!-- Spark Streaming -->
        <groupId>org.apache.spark</groupId>
        <artifactId>spark-streaming_2.10</artifactId>
